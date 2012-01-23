@@ -1,0 +1,8 @@
+type: aws-s3
+key: some value
+array:
+- One
+- Two
+- 3
+bool: true
+
