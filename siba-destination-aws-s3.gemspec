@@ -5,11 +5,11 @@ require "siba-destination-aws-s3/version"
 Gem::Specification.new do |s|
   s.name        = "siba-destination-aws-s3"
   s.version     = Siba::Destination::AwsS3::VERSION
-  s.authors     = ["TODO: Write your name"]
-  s.email       = ["TOD0: your@email.com"]
+  s.authors     = ["Evgeny Neumerzhitskiy"]
+  s.email       = ["sausageskin@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{Writes SIBA backup to Amazon S3 storage}
+  s.description = %q{An extension for SIBA gem. Allows to upload backups to Amazon S3 cloud storage.}
 
   s.rubyforge_project = "siba-destination-aws-s3"
 
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_runtime_dependency     'siba', '~>0.4'
+  s.add_runtime_dependency     'aws-s3', '~>0.6'
 
   s.add_development_dependency  'minitest', '~>2.10'
   s.add_development_dependency  'rake', '~>0.9'

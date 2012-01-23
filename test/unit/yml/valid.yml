@@ -1,8 +1,5 @@
 type: aws-s3
-key: some value
-array:
-- One
-- Two
-- 3
-bool: true
+bucket: bucket/subdir
+access_key_id: acces key id
+secret_key: secret key
 
