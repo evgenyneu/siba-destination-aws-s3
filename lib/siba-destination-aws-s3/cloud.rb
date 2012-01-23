@@ -73,8 +73,6 @@ module Siba::Destination
       def access_and_close
         siba_file.run_this do
           begin
-            logger.debug "Establishing connection with Amazon S3 service"
-
             AWS::S3::Base.establish_connection!(
               :access_key_id => access_key_id,
               :secret_access_key => secret_key);
