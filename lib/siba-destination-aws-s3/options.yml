@@ -1,0 +1,3 @@
+bucket: your-bucket/sub-dir
+access_key_id: your AWS S3 'access key id'
+secret_key: your AWS S3 'secret key'
