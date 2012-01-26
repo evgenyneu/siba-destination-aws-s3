@@ -27,21 +27,34 @@ module Siba::Destination
           end
 
           File.open(src_file, "r") do |file|
-            AWS::S3::S3Object.store file_name, file, bucket
+            AWS::S3::S3Object.store file_name, file
           end
         end
       end
 
-      def exists(file_name)
+      def exists?(file_name)
         access_and_close do
-          AWS::S3::S3Object.exists? file_name, bucket
+          AWS::S3::S3Object.exists? file_name
+        end
+      end
+
+      def bucket_exists?
+        access_and_close do
+          bucket_name = bucket.split("/")[0]
+          AWS::S3::Service.buckets.any?{|a| a.name == bucket_name}
+        end
+      end
+
+      def find_objects(object_prefix)
+        access_and_close do
+          AWS::S3::Bucket.objects(prefix: object_prefix)
         end
       end
 
       def get_file(file_name)
         access_and_close do
           begin
-            AWS::S3::S3Object.value file_name, bucket
+            AWS::S3::S3Object.value file_name
           rescue
             logger.error "Failed to get file #{file_name} from Amazon S3"
             raise
@@ -52,7 +65,7 @@ module Siba::Destination
       def delete(file_name)
         access_and_close do
           begin
-            AWS::S3::S3Object.delete file_name, bucket
+            AWS::S3::S3Object.delete file_name
           rescue
             logger.error "Failed to delete file #{file_name} from Amazon S3"
             raise
@@ -61,10 +74,11 @@ module Siba::Destination
       end
 
       def check_connection
-        access_and_close {}
+        raise Siba::Error, "Bucket '#{bucket}' does not exist." unless bucket_exists?
+        exists? "some_file"
         logger.debug "Access to Amazon S3 is verified"
       rescue Exception
-        logger.error "Can not establish connection with Amazon S3, #{bucket}"
+        logger.error "Can not connect to Amazon S3, #{bucket}"
         raise
       end
 
@@ -75,9 +89,11 @@ module Siba::Destination
           begin
             AWS::S3::Base.establish_connection!(
               :access_key_id => access_key_id,
-              :secret_access_key => secret_key);
+              :secret_access_key => secret_key,
+              :use_ssl => true);
 
-              AWS::S3::Bucket.find bucket
+              AWS::S3::Bucket.set_current_bucket_to bucket
+              AWS::S3::S3Object.set_current_bucket_to bucket
               yield
           ensure
             begin
