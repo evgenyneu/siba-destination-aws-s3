@@ -30,10 +30,10 @@ describe Siba::Destination::AwsS3::Cloud do
     @cloud.exists?(file_name).must_equal true
     @cloud.get_file(file_name).must_equal Siba::FileHelper.read(path_to_test_file)
     @cloud.delete(file_name)
+    @cloud.exists?(file_name).must_equal false
   end
 
   it "should find objects" do
-    skip
     @cloud = @cls.new @bucket, @access_key_id, @secret_key
     @cloud.find_objects("my").must_be_instance_of Array
   end

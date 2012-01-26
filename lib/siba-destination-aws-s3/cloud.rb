@@ -11,7 +11,7 @@ module Siba::Destination
       attr_accessor :bucket, :sub_dir, :access_key_id, :secret_key
 
       def initialize(bucket, access_key_id, secret_key)
-        splitted_name = bucket.split("/")[0]
+        splitted_name = bucket.split("/")
         @bucket = splitted_name.shift
         @sub_dir = splitted_name.join("/")
         @access_key_id = access_key_id
@@ -29,33 +29,33 @@ module Siba::Destination
           end
 
           File.open(src_file, "r") do |file|
-            AWS::S3::S3Object.store file_name, file
+            AWS::S3::S3Object.store full_path(file_name), file
           end
         end
       end
 
       def exists?(file_name)
         access_and_close do
-          AWS::S3::S3Object.exists? file_name
+          AWS::S3::S3Object.exists? full_path(file_name)
         end
       end
 
       def bucket_exists?
         access_and_close do
-          AWS::S3::Service.buckets.any?{|a| a.name == bucket_name}
+          AWS::S3::Service.buckets.any?{|a| a.name == bucket}
         end
       end
 
       def find_objects(object_prefix)
         access_and_close do
-          AWS::S3::Bucket.objects(prefix: object_prefix)
+          AWS::S3::Bucket.objects(prefix: full_path(object_prefix))
         end
       end
 
       def get_file(file_name)
         access_and_close do
           begin
-            AWS::S3::S3Object.value file_name
+            AWS::S3::S3Object.value full_path(file_name)
           rescue
             logger.error "Failed to get file #{file_name} from Amazon S3"
             raise
@@ -66,7 +66,7 @@ module Siba::Destination
       def delete(file_name)
         access_and_close do
           begin
-            AWS::S3::S3Object.delete file_name
+            AWS::S3::S3Object.delete full_path(file_name)
           rescue
             logger.error "Failed to delete file #{file_name} from Amazon S3"
             raise
@@ -84,6 +84,11 @@ module Siba::Destination
       end
 
       private
+
+      def full_path(file)
+        return file if sub_dir.empty?
+        sub_dir + "/" + file
+      end
 
       def access_and_close
         siba_file.run_this do
