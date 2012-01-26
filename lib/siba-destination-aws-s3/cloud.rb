@@ -29,14 +29,14 @@ module Siba::Destination
           end
 
           File.open(src_file, "r") do |file|
-            AWS::S3::S3Object.store full_path(file_name), file
+            AWS::S3::S3Object.store path(file_name), file
           end
         end
       end
 
       def exists?(file_name)
         access_and_close do
-          AWS::S3::S3Object.exists? full_path(file_name)
+          AWS::S3::S3Object.exists? path(file_name)
         end
       end
 
@@ -48,14 +48,14 @@ module Siba::Destination
 
       def find_objects(object_prefix)
         access_and_close do
-          AWS::S3::Bucket.objects(prefix: full_path(object_prefix))
+          AWS::S3::Bucket.objects(prefix: path(object_prefix))
         end
       end
 
       def get_file(file_name)
         access_and_close do
           begin
-            AWS::S3::S3Object.value full_path(file_name)
+            AWS::S3::S3Object.value path(file_name)
           rescue
             logger.error "Failed to get file #{file_name} from Amazon S3"
             raise
@@ -66,7 +66,7 @@ module Siba::Destination
       def delete(file_name)
         access_and_close do
           begin
-            AWS::S3::S3Object.delete full_path(file_name)
+            AWS::S3::S3Object.delete path(file_name)
           rescue
             logger.error "Failed to delete file #{file_name} from Amazon S3"
             raise
@@ -75,9 +75,11 @@ module Siba::Destination
       end
 
       def check_connection
-        raise Siba::Error, "Bucket '#{bucket}' does not exist." unless bucket_exists?
-        exists? "some_file"
-        logger.debug "Access to Amazon S3 is verified"
+        siba_file.run_this do
+          raise Siba::Error, "Bucket '#{bucket}' does not exist." unless bucket_exists?
+          exists? "some_file"
+          logger.debug "Access to Amazon S3 is verified"
+        end
       rescue Exception
         logger.error "Can not connect to Amazon S3, #{bucket}"
         raise
@@ -85,7 +87,7 @@ module Siba::Destination
 
       private
 
-      def full_path(file)
+      def path(file)
         return file if sub_dir.empty?
         sub_dir + "/" + file
       end
