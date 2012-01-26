@@ -21,7 +21,6 @@ describe Siba::Destination::AwsS3::Cloud do
   end
 
   it "should upload file to cloud" do
-    skip
     @cloud = @cls.new @bucket, @access_key_id, @secret_key
 
     path_to_test_file = prepare_test_file "awss3-u"
@@ -34,6 +33,7 @@ describe Siba::Destination::AwsS3::Cloud do
   end
 
   it "should find objects" do
+    skip
     @cloud = @cls.new @bucket, @access_key_id, @secret_key
     @cloud.find_objects("my").must_be_instance_of Array
   end

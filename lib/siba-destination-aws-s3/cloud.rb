@@ -8,10 +8,12 @@ module Siba::Destination
       include Siba::FilePlug
       include Siba::LoggerPlug
 
-      attr_accessor :bucket, :access_key_id, :secret_key
+      attr_accessor :bucket, :sub_dir, :access_key_id, :secret_key
 
       def initialize(bucket, access_key_id, secret_key)
-        @bucket = bucket
+        splitted_name = bucket.split("/")[0]
+        @bucket = splitted_name.shift
+        @sub_dir = splitted_name.join("/")
         @access_key_id = access_key_id
         @secret_key = secret_key
 
@@ -40,7 +42,6 @@ module Siba::Destination
 
       def bucket_exists?
         access_and_close do
-          bucket_name = bucket.split("/")[0]
           AWS::S3::Service.buckets.any?{|a| a.name == bucket_name}
         end
       end
