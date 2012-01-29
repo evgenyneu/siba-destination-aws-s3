@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Evgeny Neumerzhitskiy"]
   s.email       = ["sausageskin@gmail.com"]
   s.homepage    = "https://github.com/evgenyneu/siba-destination-aws-s3"
+  s.license     = "MIT"
   s.summary     = %q{An extention for SIBA backup and restore utility}
   s.description = %q{An extension for SIBA backup and restore utility. It allows to use Amazon S3 as backup destination.}
 
