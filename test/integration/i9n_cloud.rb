@@ -20,17 +20,34 @@ describe Siba::Destination::AwsS3::Cloud do
     flunk "#{secret_key_env} environment variable is not set" unless @secret_key
   end
 
-  it "should upload file to cloud" do
-    @cloud = @cls.new @bucket, @access_key_id, @secret_key
+  it "should upload file to cloud and get the list" do
+    begin
+      @cloud = @cls.new @bucket, @access_key_id, @secret_key
 
-    path_to_test_file = prepare_test_file "awss3-u"
-    @cloud.upload path_to_test_file
-    
-    file_name = File.basename path_to_test_file
-    @cloud.exists?(file_name).must_equal true
-    @cloud.get_file(file_name).must_equal Siba::FileHelper.read(path_to_test_file)
-    @cloud.delete(file_name)
-    @cloud.exists?(file_name).must_equal false
+      backup_name = "awss3-u"
+      path_to_test_file = prepare_test_file backup_name
+      @cloud.upload path_to_test_file
+      
+      file_name = File.basename path_to_test_file
+      @cloud.exists?(file_name).must_equal true
+      @cloud.get_file(file_name).must_equal Siba::FileHelper.read(path_to_test_file)
+
+      # get list
+      list = @cloud.get_backups_list backup_name
+      full_backup_name = list[0][0]
+      full_backup_name.must_match /^#{backup_name}/
+      list[0][1].must_be_instance_of Time
+
+      # restore backup
+      dest_dir = mkdir_in_tmp_dir "awsbk"
+      @cloud.restore_backup_to_dir full_backup_name, dest_dir
+      path_to_dest_file = File.join dest_dir, full_backup_name
+      File.file?(path_to_dest_file).must_equal true
+      FileUtils.compare_file(path_to_test_file, path_to_dest_file).must_equal true
+    ensure
+      @cloud.delete(file_name)
+      @cloud.exists?(file_name).must_equal false
+    end
   end
 
   it "should find objects" do

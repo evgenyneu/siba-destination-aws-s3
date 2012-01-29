@@ -17,4 +17,8 @@ describe Siba::Destination::AwsS3::Cloud do
   it "should upload" do
     @obj.upload "/file"
   end
+  
+  it "should upload" do
+    @obj.get_backups_list "backups"
+  end
 end

@@ -34,6 +34,24 @@ module Siba::Destination
         end
       end
 
+      def get_backups_list(backup_prefix)
+        backups = find_objects backup_prefix    
+        siba_file.run_this do
+          backups.map do |obj|
+            [File.basename(obj.key), obj.last_modified]
+          end
+        end
+      end
+
+      def restore_backup_to_dir(backup_name, dir)
+        access_and_close do
+          path_to_file = File.join dir, backup_name
+          open(path_to_file, 'w') do |file|
+            file.write(get_file backup_name)
+          end
+        end
+      end
+
       def exists?(file_name)
         access_and_close do
           AWS::S3::S3Object.exists? path(file_name)
