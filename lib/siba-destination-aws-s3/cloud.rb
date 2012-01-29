@@ -28,7 +28,7 @@ module Siba::Destination
             raise Siba::Error, "Can not find backup file for uploading: #{src_file}"
           end
 
-          File.open(src_file, "r") do |file|
+          File.open(src_file, "rb") do |file|
             AWS::S3::S3Object.store path(file_name), file
           end
         end
@@ -46,7 +46,7 @@ module Siba::Destination
       def restore_backup_to_dir(backup_name, dir)
         access_and_close do
           path_to_file = File.join dir, backup_name
-          open(path_to_file, 'w') do |file|
+          open(path_to_file, 'wb') do |file|
             file.write(get_file backup_name)
           end
         end
