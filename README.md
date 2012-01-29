@@ -1,7 +1,6 @@
 # Overview
 
-
-This is a plugin for a [SIBA backup and restore utility](https://github.com/evgenyneu/siba). It is used to keep backups in Amazon S3 cloud storage.
+This is a plugin for [SIBA backup and restore utility](https://github.com/evgenyneu/siba). It allows to use Amazon S3 as backup destination.
 
 ## Installation
 
