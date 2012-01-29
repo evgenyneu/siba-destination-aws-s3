@@ -28,7 +28,6 @@ module Siba::Destination
       end                      
 
       def backup(path_to_backup_file) 
-        logger.info "Uploading backup to Amazon S3: #{File.basename path_to_backup_file}"
         @cloud.upload path_to_backup_file
       end
 

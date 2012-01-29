@@ -22,6 +22,7 @@ module Siba::Destination
 
       def upload(src_file)        
         file_name = File.basename src_file
+        logger.info "Uploading backup file to Amazon S3: #{file_name}, bucket: #{bucket_with_path}"
         access_and_close do
           unless siba_file.file_file? src_file
             raise Siba::Error, "Can not find backup file for uploading: #{src_file}"
@@ -98,7 +99,7 @@ module Siba::Destination
           logger.debug "Access to Amazon S3 is verified"
         end
       rescue Exception
-        logger.error "Can not connect to Amazon S3, #{bucket}"
+        logger.error "Can not connect to Amazon S3. Bucket: #{bucket_with_path}"
         raise
       end
 
@@ -107,6 +108,11 @@ module Siba::Destination
       def path(file)
         return file if sub_dir.empty?
         sub_dir + "/" + file
+      end
+
+      def bucket_with_path
+        return bucket if sub_dir.empty?
+        bucket + "/" + sub_dir
       end
 
       def access_and_close
