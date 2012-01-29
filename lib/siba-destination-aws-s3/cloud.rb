@@ -22,7 +22,6 @@ module Siba::Destination
 
       def upload(src_file)        
         file_name = File.basename src_file
-        logger.info "Uploading backup to Amazon S3: #{file_name}"
         access_and_close do
           unless siba_file.file_file? src_file
             raise Siba::Error, "Can not find backup file for uploading: #{src_file}"

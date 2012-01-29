@@ -6,10 +6,11 @@ require 'siba-destination-aws-s3/init'
 describe Siba::Destination::AwsS3::Cloud do
   before do
     @cls = Siba::Destination::AwsS3::Cloud
+    @init = Siba::Destination::AwsS3::Init
 
-    bucket_env = "AWS_S3_SIBA_TEST_BUCKET_NAME"
-    access_key_id_env = "AWS_S3_SIBA_TEST_ACCESS_KEY_ID"
-    secret_key_env = "AWS_S3_SIBA_TEST_SECRET_ACCESS_KEY"
+    bucket_env = "SIBA_TEST_AWS_S3_BUCKET_NAME"
+    access_key_id_env = @init::DEFAULT_ACCESS_KEY_ID_ENV_NAME
+    secret_key_env = @init::DEFAULT_SECRET_KEY_ENV_NAME
 
     @bucket = ENV[bucket_env]
     @access_key_id = ENV[access_key_id_env]

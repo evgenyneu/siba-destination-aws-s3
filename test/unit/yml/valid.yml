@@ -1,5 +1,5 @@
 type: aws-s3
 bucket: bucket/subdir
 access_key_id: acces key id
-secret_key: secret key
+secret_access_key: secret key
 

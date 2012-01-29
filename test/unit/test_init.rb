@@ -15,12 +15,29 @@ describe Siba::Destination::AwsS3::Init do
     @plugin.must_be_instance_of Siba::Destination::AwsS3::Init
     @plugin.cloud.must_be_instance_of Siba::Destination::AwsS3::Cloud
   end
+
+  it "should not fail if keys are missing but env variables are defined" do
+    ENV[@obj::DEFAULT_ACCESS_KEY_ID_ENV_NAME] = "akd"
+    ENV[@obj::DEFAULT_SECRET_KEY_ENV_NAME] = "sk"
+    cloud = @obj.new({"bucket"=>"bucket"})
+    cloud.cloud.access_key_id.must_equal "akd"
+    cloud.cloud.secret_key.must_equal "sk"
+  end
+
+  it "should fail if keys are missing" do
+    ENV[@obj::DEFAULT_ACCESS_KEY_ID_ENV_NAME] = nil
+    ENV[@obj::DEFAULT_SECRET_KEY_ENV_NAME] = "sk"
+    ->{@obj.new({"bucket"=>"bucket"})}.must_raise Siba::CheckError
+
+    ENV[@obj::DEFAULT_ACCESS_KEY_ID_ENV_NAME] = "akd"
+    ENV[@obj::DEFAULT_SECRET_KEY_ENV_NAME] = nil
+    ->{@obj.new({"bucket"=>"bucket"})}.must_raise Siba::CheckError
+  end
   
-  it "should fail when options are missing" do
+  it "should fail when bucket is missing" do
     ->{@obj.new({})}.must_raise Siba::CheckError
-    ->{@obj.new({"bucket"=>"value"})}.must_raise Siba::CheckError
-    ->{@obj.new({"bucket"=>"value", "secret_key"=>"value"})}.must_raise Siba::CheckError
-    ->{@obj.new({"bucket"=>"value", "access_key_id"=>"value"})}.must_raise Siba::CheckError
+    ->{@obj.new({"secret_key"=>"value"})}.must_raise Siba::CheckError
+    ->{@obj.new({"access_key_id"=>"value"})}.must_raise Siba::CheckError
   end
 
   it "should run backup" do
