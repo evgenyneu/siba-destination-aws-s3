@@ -9,4 +9,4 @@ This is a plugin for a [SIBA backup and restore utility](https://github.com/evge
 
 ## Usage
 
-Run `siba generate FILE` command to generate options file and select aws-s3 as destination plugin. After that edit the options file and set your Amazon S3 options.
+Run `siba generate FILE` command to generate options file and select aws-s3 as destination plugin. Edit the generated options file and set backup options.
